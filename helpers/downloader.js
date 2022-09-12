@@ -4,22 +4,27 @@ const FormData = require('form-data');
 const { createYouTubeObject, createTwitterObject, createRedditObjet } = require('./object');
 
 const downloader = async (type, url) => {
-    let data;
+    try {
+        let data;
 
-    switch (type) {
-        case 'youtube':
-            data = await downloadFromYouTube(url);
-            break;
-        case 'twitter':
-            data = await downloadFromTwitter(url);
-        case 'reddit':
-            data = await downloadFromReddit(url);
-        default:
-            throw Error('Invalid type');
-            break;
+        switch (type) {
+            case 'youtube':
+                data = await downloadFromYouTube(url);
+                break;
+            case 'twitter':
+                data = await downloadFromTwitter(url);
+                break;
+            case 'reddit':
+                data = await downloadFromReddit(url);
+                break;
+            default:
+                throw Error('Invalid type');
+                break;
+        }
+        return data;
+    } catch (error) {
+        throw Error(error);
     }
-
-    return data;
 };
 
 const downloadFromYouTube = async (url) => {
@@ -33,21 +38,29 @@ const downloadFromYouTube = async (url) => {
 };
 
 const downloadFromTwitter = async (url) => {
-    const form = new FormData();
-    form.append('url', url);
-    form.append('action', 'post');
+    try {
+        const form = new FormData();
+        form.append('url', url);
+        form.append('action', 'post');
 
-    const { data } = await axios.post('https://twsaver.com/twitter-video-downloader.php', form);
+        const { data } = await axios.post('https://twsaver.com/twitter-video-downloader.php', form);
 
-    return createTwitterObject(data);
+        return createTwitterObject(data);
+    } catch (error) {
+        throw Error(error);
+    }
 };
 
 const downloadFromReddit = async (url) => {
-    const rs = `https://redditsave.com/info?url=${url}`;
+    try {
+        const rs = `https://redditsave.com/info?url=${url}`;
 
-    const { data } = await axios.get(encodeURI(rs));
+        const { data } = await axios.get(encodeURI(rs));
 
-    return await createRedditObjet(data);
+        return await createRedditObjet(data);
+    } catch (error) {
+        throw Error(error);
+    }
 };
 
 module.exports = downloader;
