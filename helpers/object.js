@@ -20,7 +20,7 @@ const createYouTubeObject = (data) => {
 
         BASE_OBJECT.title = details.title;
         BASE_OBJECT.owner = details.ownerChannelName,
-        BASE_OBJECT.thumbnail = details.thumbnails.pop(),
+        BASE_OBJECT.thumbnail = details.thumbnails.pop().url,
         BASE_OBJECT.duration = parseInt(details.lengthSeconds),
         BASE_OBJECT.duration_readable = fancyTimeFormat(details.lengthSeconds),
         BASE_OBJECT.audio = ytdl.filterFormats(data.formats, 'audioonly')[0].url
