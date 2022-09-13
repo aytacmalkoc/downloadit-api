@@ -7,6 +7,7 @@ const { calculateVideoSize, fancyTimeFormat } = require('./formats');
 const BASE_OBJECT = {
     title: null,
     owner: null,
+    original: null,
     thumbnail: null,
     duration: null,
     duration_readable: null,
@@ -20,6 +21,7 @@ const createYouTubeObject = (data) => {
 
         BASE_OBJECT.title = details.title;
         BASE_OBJECT.owner = details.ownerChannelName,
+        BASE_OBJECT.original = details.video_url;
         BASE_OBJECT.thumbnail = details.thumbnails.pop().url,
         BASE_OBJECT.duration = parseInt(details.lengthSeconds),
         BASE_OBJECT.duration_readable = fancyTimeFormat(details.lengthSeconds),
@@ -41,8 +43,10 @@ const createYouTubeObject = (data) => {
     }
 };
 
-const createTwitterObject = (html) => {
+const createTwitterObject = (html, url) => {
     try {
+        BASE_OBJECT.original = url;
+
         const dom = htmlparser2.parseDocument(html);
         const $ = cheerio.load(dom);
         const tableRows = $('.table tbody').children('tr').toArray();
@@ -74,8 +78,8 @@ const createRedditObjet = async (html) => {
 
         BASE_OBJECT.title = $('h2').first().text().replace('“', '').replace('”', '').trim();
         BASE_OBJECT.owner = $(tableRows[1]).children('td').last().text().trim();
+        BASE_OBJECT.original = $(tableRows[2]).children('td').last().children('a').first().attr('href').trim();
         BASE_OBJECT.thumbnail = $('img.center-block').first().attr('src');
-        // BASE_OBJECT.permalink = $(tableRows[2]).children('td').last().children('a').first().attr('href').trim();
         BASE_OBJECT.audio = `https://redditsave.com${$('a:contains("save audio")').first().attr('href')}`;
 
         BASE_OBJECT.videos.push({
