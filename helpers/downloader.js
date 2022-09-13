@@ -21,6 +21,10 @@ const downloader = async (type, url) => {
                 throw Error('Invalid type');
                 break;
         }
+
+        // sort video by quality higher to lower
+        data.videos = data.videos.sort((a, b) => b.quality.localeCompare(a.quality));
+
         return data;
     } catch (error) {
         throw Error(error);
@@ -45,7 +49,7 @@ const downloadFromTwitter = async (url) => {
 
         const { data } = await axios.post('https://twsaver.com/twitter-video-downloader.php', form);
 
-        return createTwitterObject(data);
+        return createTwitterObject(data, url);
     } catch (error) {
         throw Error(error);
     }
